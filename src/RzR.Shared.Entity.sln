@@ -14,28 +14,64 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ItemDistribution", "ItemDis
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ItemDistributionTest", "tests\ItemDistributionTest\ItemDistributionTest.csproj", "{D5BF175B-9CF6-4877-9124-C21EB8B549DB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ItemDistributionMsTests", "tests\ItemDistributionMsTests\ItemDistributionMsTests.csproj", "{772D775B-28C8-429C-97D0-EFBE9A8DD280}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{37BA6C5B-9259-49F6-ABC0-B6EB17D1015B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{37BA6C5B-9259-49F6-ABC0-B6EB17D1015B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37BA6C5B-9259-49F6-ABC0-B6EB17D1015B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{37BA6C5B-9259-49F6-ABC0-B6EB17D1015B}.Debug|x64.Build.0 = Debug|Any CPU
+		{37BA6C5B-9259-49F6-ABC0-B6EB17D1015B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{37BA6C5B-9259-49F6-ABC0-B6EB17D1015B}.Debug|x86.Build.0 = Debug|Any CPU
 		{37BA6C5B-9259-49F6-ABC0-B6EB17D1015B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37BA6C5B-9259-49F6-ABC0-B6EB17D1015B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37BA6C5B-9259-49F6-ABC0-B6EB17D1015B}.Release|x64.ActiveCfg = Release|Any CPU
+		{37BA6C5B-9259-49F6-ABC0-B6EB17D1015B}.Release|x64.Build.0 = Release|Any CPU
+		{37BA6C5B-9259-49F6-ABC0-B6EB17D1015B}.Release|x86.ActiveCfg = Release|Any CPU
+		{37BA6C5B-9259-49F6-ABC0-B6EB17D1015B}.Release|x86.Build.0 = Release|Any CPU
 		{D5BF175B-9CF6-4877-9124-C21EB8B549DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D5BF175B-9CF6-4877-9124-C21EB8B549DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5BF175B-9CF6-4877-9124-C21EB8B549DB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D5BF175B-9CF6-4877-9124-C21EB8B549DB}.Debug|x64.Build.0 = Debug|Any CPU
+		{D5BF175B-9CF6-4877-9124-C21EB8B549DB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D5BF175B-9CF6-4877-9124-C21EB8B549DB}.Debug|x86.Build.0 = Debug|Any CPU
 		{D5BF175B-9CF6-4877-9124-C21EB8B549DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5BF175B-9CF6-4877-9124-C21EB8B549DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5BF175B-9CF6-4877-9124-C21EB8B549DB}.Release|x64.ActiveCfg = Release|Any CPU
+		{D5BF175B-9CF6-4877-9124-C21EB8B549DB}.Release|x64.Build.0 = Release|Any CPU
+		{D5BF175B-9CF6-4877-9124-C21EB8B549DB}.Release|x86.ActiveCfg = Release|Any CPU
+		{D5BF175B-9CF6-4877-9124-C21EB8B549DB}.Release|x86.Build.0 = Release|Any CPU
+		{772D775B-28C8-429C-97D0-EFBE9A8DD280}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{772D775B-28C8-429C-97D0-EFBE9A8DD280}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{772D775B-28C8-429C-97D0-EFBE9A8DD280}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{772D775B-28C8-429C-97D0-EFBE9A8DD280}.Debug|x64.Build.0 = Debug|Any CPU
+		{772D775B-28C8-429C-97D0-EFBE9A8DD280}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{772D775B-28C8-429C-97D0-EFBE9A8DD280}.Debug|x86.Build.0 = Debug|Any CPU
+		{772D775B-28C8-429C-97D0-EFBE9A8DD280}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{772D775B-28C8-429C-97D0-EFBE9A8DD280}.Release|Any CPU.Build.0 = Release|Any CPU
+		{772D775B-28C8-429C-97D0-EFBE9A8DD280}.Release|x64.ActiveCfg = Release|Any CPU
+		{772D775B-28C8-429C-97D0-EFBE9A8DD280}.Release|x64.Build.0 = Release|Any CPU
+		{772D775B-28C8-429C-97D0-EFBE9A8DD280}.Release|x86.ActiveCfg = Release|Any CPU
+		{772D775B-28C8-429C-97D0-EFBE9A8DD280}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{D5BF175B-9CF6-4877-9124-C21EB8B549DB} = {E737BE4D-6DFF-4A67-A3D9-2AC58BFBBC07}
+		{772D775B-28C8-429C-97D0-EFBE9A8DD280} = {E737BE4D-6DFF-4A67-A3D9-2AC58BFBBC07}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4B5BD8B8-58AD-47B4-B85A-E7242D47B9FE}
 		BuildVersion_UseUniversalClock = True
 		BuildVersion_ConfigurationName = Release
 		BuildVersion_AssemblyInfoFilename = shared\GeneralAssemblyInfo.cs
@@ -43,6 +79,5 @@ Global
 		BuildVersion_UpdateFileVersion = True
 		BuildVersion_UpdateAssemblyVersion = True
 		BuildVersion_BuildVersioningStyle = None.None.Increment.TimeStamp
-		SolutionGuid = {4B5BD8B8-58AD-47B4-B85A-E7242D47B9FE}
 	EndGlobalSection
 EndGlobal

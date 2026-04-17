@@ -271,3 +271,4 @@ coverage.*
 
 # NCrunch
 *.ncrunchproject.user
+*.ncrunchsolution
