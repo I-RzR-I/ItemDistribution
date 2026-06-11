@@ -14,7 +14,7 @@
 //  </summary>
 // ***********************************************************************
 
-namespace ItemDistribution.Abstractions
+namespace RzR.ItemDistribution.Abstractions
 {
     /// -------------------------------------------------------------------------------------------------
     /// <summary>

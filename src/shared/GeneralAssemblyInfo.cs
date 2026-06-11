@@ -18,6 +18,7 @@
 
 using System.Reflection;
 using System.Resources;
+using System.Runtime.CompilerServices;
 
 #endregion
 
@@ -39,6 +40,8 @@ using System.Resources;
 [assembly: AssemblyMetadata("ContactEmail", "ddpRzR@hotmail.com")]
 [assembly: NeutralResourcesLanguage("en-US", UltimateResourceFallbackLocation.MainAssembly)]
 
-[assembly: AssemblyVersion("2.0.0.6122")]
-[assembly: AssemblyFileVersion("2.0.0.6122")]
-[assembly: AssemblyInformationalVersion("2.0.0.6122")]
+[assembly: AssemblyVersion("3.0.0.7577")]
+[assembly: AssemblyFileVersion("3.0.0.7577")]
+[assembly: AssemblyInformationalVersion("3.0.0.7577")]
+
+[assembly: InternalsVisibleTo("ItemDistributionMsTests")]

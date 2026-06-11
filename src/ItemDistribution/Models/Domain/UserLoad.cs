@@ -20,7 +20,7 @@ using System;
 
 #endregion
 
-namespace ItemDistribution.Models.Domain
+namespace RzR.ItemDistribution.Models.Domain
 {
     /// -------------------------------------------------------------------------------------------------
     /// <summary>
@@ -30,6 +30,7 @@ namespace ItemDistribution.Models.Domain
     /// <typeparam name="TUserId">Type of the user identifier (must be a value type).</typeparam>
     /// =================================================================================================
     public sealed class UserLoad<TUserId>
+        where TUserId : struct
     {
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
@@ -51,6 +52,18 @@ namespace ItemDistribution.Models.Domain
             short priority = 0, DateTime lastActivityDate = default,
             decimal workingHours = 0)
         {
+            if (currentLoad < 0)
+                throw new ArgumentOutOfRangeException(nameof(currentLoad),
+                    $"{nameof(currentLoad)} must be non-negative.");
+
+            if (capacity < 0)
+                throw new ArgumentOutOfRangeException(nameof(capacity),
+                    $"{nameof(capacity)} must be non-negative.");
+
+            if (workingHours < 0)
+                throw new ArgumentOutOfRangeException(nameof(workingHours),
+                    $"{nameof(workingHours)} must be non-negative.");
+
             UserId = userId;
             CurrentLoad = currentLoad;
             Capacity = capacity;

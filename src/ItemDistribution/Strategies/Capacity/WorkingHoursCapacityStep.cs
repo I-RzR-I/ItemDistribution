@@ -2,31 +2,30 @@
 //  Assembly         : RzR.Shared.Entity.ItemDistribution
 //  Author           : RzR
 //  Created On       : 2026-04-01 21:04
-// 
+//
 //  Last Modified By : RzR
-//  Last Modified On : 2026-04-03 01:36
+//  Last Modified On : 2026-06-11 21:20
 // ***********************************************************************
 //  <copyright file="WorkingHoursCapacityStep.cs" company="RzR SOFT & TECH">
 //   Copyright © RzR. All rights reserved.
 //  </copyright>
-// 
+//
 //  <summary>
 //  </summary>
 // ***********************************************************************
 
 #region U S A G E S
 
-using AggregatedGenericResultMessage;
-using AggregatedGenericResultMessage.Abstractions;
-using AggregatedGenericResultMessage.Extensions.Result;
-using ItemDistribution.Abstractions.Pipeline;
-using ItemDistribution.Engine.Pipeline;
-using ItemDistribution.Models.Domain;
+using RzR.ItemDistribution.Abstractions.Pipeline;
+using RzR.ItemDistribution.Models.Domain;
+using RzR.ResultMessage;
+using RzR.ResultMessage.Abstractions;
+using RzR.ResultMessage.Extensions.Result;
 using System;
 
 #endregion
 
-namespace ItemDistribution.Strategies.Capacity
+namespace RzR.ItemDistribution.Strategies.Capacity
 {
     /// -------------------------------------------------------------------------------------------------
     /// <summary>
@@ -41,9 +40,10 @@ namespace ItemDistribution.Strategies.Capacity
     ///     This step must be placed AFTER <see cref="Scoring.LoadScoringStep{TUserId}" /> in the pipeline.
     /// </summary>
     /// <typeparam name="TUserId">Type of the user identifier.</typeparam>
-    /// <seealso cref="T:ItemDistribution.Abstractions.Pipeline.IDistributionStep{TUserId}" />
+    /// <seealso cref="T:RzR.ItemDistribution.Abstractions.Pipeline.IDistributionStep{TUserId}" />
     /// =================================================================================================
     public class WorkingHoursCapacityStep<TUserId> : IDistributionStep<TUserId>
+        where TUserId : struct
     {
         private readonly decimal _fullWorkDayHours;
         private readonly int _maxAllowedDocs;
@@ -62,7 +62,7 @@ namespace ItemDistribution.Strategies.Capacity
         }
 
         /// <inheritdoc />
-        public IResult Execute(DistributionContext<TUserId> context)
+        public IResult Execute(IDistributionContext<TUserId> context)
         {
             try
             {
@@ -79,13 +79,15 @@ namespace ItemDistribution.Strategies.Capacity
                         ? 0m
                         : (effectiveCapacity - user.CurrentLoad) / effectiveCapacity;
 
-                    context.Scores[user.UserId] = adjustedScore;
+                    context.SetEffectiveCapacity(user.UserId, effectiveCapacity);
+                    context.SetScore(user.UserId, adjustedScore);
 
-                    context.Trace.Add(new DistributionTrace<TUserId>()
+                    context.AddTrace(new DistributionTrace<TUserId>()
                     {
-                        UserId = user.UserId, 
+                        UserId = user.UserId,
                         Score = adjustedScore,
-                        Reason = $"WorkingHours adjusted: hours={user.WorkingHours}, effectiveCapacity={effectiveCapacity}, score={adjustedScore:F4}"
+                        Reason = $"WorkingHours adjusted: hours={user.WorkingHours}, " +
+                                 $"effectiveCapacity={effectiveCapacity}, score={adjustedScore:F4}"
                     });
                 }
 

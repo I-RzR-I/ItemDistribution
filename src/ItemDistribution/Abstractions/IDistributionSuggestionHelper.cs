@@ -1,4 +1,4 @@
-// ***********************************************************************
+﻿// ***********************************************************************
 //  Assembly         : RzR.Shared.Entity.ItemDistribution
 //  Author           : RzR
 //  Created On       : 2026-04-01 21:04
@@ -16,15 +16,15 @@
 
 #region U S A G E S
 
-using AggregatedGenericResultMessage.Abstractions;
-using ItemDistribution.Models.Domain;
+using RzR.ItemDistribution.Models.Domain;
+using RzR.ResultMessage.Abstractions;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 #endregion
 
-namespace ItemDistribution.Abstractions
+namespace RzR.ItemDistribution.Abstractions
 {
     /// -------------------------------------------------------------------------------------------------
     /// <summary>

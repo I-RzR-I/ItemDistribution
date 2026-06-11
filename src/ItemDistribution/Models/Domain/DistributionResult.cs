@@ -16,12 +16,14 @@
 
 #region U S A G E S
 
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 #endregion
 
-namespace ItemDistribution.Models.Domain
+namespace RzR.ItemDistribution.Models.Domain
 {
     /// -------------------------------------------------------------------------------------------------
     /// <summary>
@@ -67,19 +69,25 @@ namespace ItemDistribution.Models.Domain
         /// </summary>
         /// <param name="allocation">Allocation map from the engine.</param>
         /// <param name="trace">Audit trace from the engine.</param>
+        /// <param name="requestedDocuments">The number of documents submitted to the engine for this run.</param>
         /// =================================================================================================
         internal DistributionResult(
             IDictionary<TUserId, int> allocation,
-            IList<DistributionTrace<TUserId>> trace)
+            IList<DistributionTrace<TUserId>> trace,
+            int requestedDocuments)
         {
-            Allocation = allocation;
-            Trace = trace as IReadOnlyList<DistributionTrace<TUserId>>
-                    ?? ((List<DistributionTrace<TUserId>>)trace).AsReadOnly();
+            // Defensive copies prevent callers from mutating the engine's live collections.
+            Allocation = new Dictionary<TUserId, int>(allocation);
+            Trace = new ReadOnlyCollection<DistributionTrace<TUserId>>(new List<DistributionTrace<TUserId>>(trace));
             TotalAllocated = allocation.Values.Sum();
+            RequestedDocuments = requestedDocuments;
+            UnallocatedDocuments = Math.Max(0, RequestedDocuments - TotalAllocated);
+            IsFullyAllocated = UnallocatedDocuments == 0;
 
             var ranked = allocation
                 .Where(kv => kv.Value > 0)
                 .OrderByDescending(kv => kv.Value)
+                .ThenBy(kv => kv.Key) // deterministic tie-break mirrors the allocator's own UserId tie-break
                 .ToList();
 
             PrimaryUserId = ranked.Count > 0 ? ranked[0].Key : null;
@@ -118,9 +126,39 @@ namespace ItemDistribution.Models.Domain
         ///     The sum of all values in <see cref="Allocation" />.
         ///     Always ≤ the <c>documents</c> count passed to the engine
         ///     (maybe less when all users are at capacity before all items are placed).
+        ///     When <see cref="UnallocatedDocuments" /> &gt; 0, capacity was exhausted before all items
+        ///     were placed.
         /// </summary>
         /// =================================================================================================
         public int TotalAllocated { get; }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     The number of documents submitted to the engine for this run.
+        ///     Comparing this against <see cref="TotalAllocated" /> shows whether any items went unplaced;
+        ///     prefer <see cref="UnallocatedDocuments" /> or <see cref="IsFullyAllocated" /> for that check.
+        /// </summary>
+        /// =================================================================================================
+        public int RequestedDocuments { get; }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     The number of documents that could not be placed because total user capacity was exhausted
+        ///     before all items were distributed.
+        ///     Computed as <c>Max(0, <see cref="RequestedDocuments" /> - <see cref="TotalAllocated" />)</c>.
+        ///     A value greater than 0 means the engine ran out of available capacity mid-run.
+        /// </summary>
+        /// =================================================================================================
+        public int UnallocatedDocuments { get; }
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
+        ///     <see langword="true" /> when every requested document was placed;
+        ///     <see langword="false" /> when at least one document could not be allocated due to capacity
+        ///     constraints (<see cref="UnallocatedDocuments" /> &gt; 0).
+        /// </summary>
+        /// =================================================================================================
+        public bool IsFullyAllocated { get; }
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>

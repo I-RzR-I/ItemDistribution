@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using ItemDistribution.Models.Config;
-using ItemDistribution.Models.Domain;
-using ItemDistribution.Public;
+using RzR.ItemDistribution.Models.Config;
+using RzR.ItemDistribution.Models.Domain;
+using RzR.ItemDistribution.Public;
+using RzR.ResultMessage.Abstractions;
 
 namespace ItemDistributionTest
 {
@@ -336,7 +337,7 @@ namespace ItemDistributionTest
         private static void PrintResult(
             string label,
             Stopwatch time,
-            AggregatedGenericResultMessage.Abstractions.IResult<DistributionResult<Guid>> result,
+            IResult<DistributionResult<Guid>> result,
             Dictionary<Guid, string> names)
         {
             Console.WriteLine($"[{label}]  {time.Elapsed.TotalMilliseconds:F2} ms");
