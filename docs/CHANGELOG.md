@@ -1,3 +1,8 @@
+### **v3.0.0.7577** [[RzR](mailto:108324929+I-RzR-I@users.noreply.github.com)] 11-06-2026
+* [7235013] (RzR) -> Auto commit uncommited files
+* [0304e62] (RzR) -> Auto commit uncommited files
+* [09b40ba] (RzR) -> Rename to RzR.ItemDistribution, narrow step contract, and harden engine
+
 # CHANGELOG
 
 ### **v2.0.0.6122** [[RzR](mailto:108324929+I-RzR-I@users.noreply.github.com)] 17-04-2026

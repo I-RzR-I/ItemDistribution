@@ -18,7 +18,6 @@
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<PackageDescription>An item/document distribution suggestion based on user load calculation.</PackageDescription>
 		<Summary>An item/document distribution suggestion based on user load calculation.</Summary>
-		<PackageId>ItemDistribution</PackageId>
 		<PackageTitle>ItemDistribution</PackageTitle>
 		<Title>ItemDistribution</Title>
 		<LangVersion>latest</LangVersion>
