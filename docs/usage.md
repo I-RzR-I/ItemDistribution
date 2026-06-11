@@ -5,9 +5,9 @@
 Create a `DistributionSuggestionHelper<TUserId>` with an `EngineConfig`, then call `Generate(...)` or `GenerateAsync(...)`.
 
 ```csharp
-using ItemDistribution.Models.Config;
-using ItemDistribution.Models.Domain;
-using ItemDistribution.Public;
+using RzR.ItemDistribution.Models.Config;
+using RzR.ItemDistribution.Models.Domain;
+using RzR.ItemDistribution.Public;
 
 // 1. Configure the engine
 var sut = new DistributionSuggestionHelper<Guid>(new EngineConfig
@@ -79,18 +79,28 @@ The `Generate` / `GenerateAsync` methods return `IResult<DistributionResult<TUse
 |---|---|---|
 | `PrimaryUserId` | `TUserId?` | Top-ranked user — the primary recommendation. `null` when nothing could be allocated. |
 | `AlternativeUserId` | `TUserId?` | Second-ranked user — a deterministic fallback. `null` when fewer than 2 users received items. |
-| `Allocation` | `IDictionary<TUserId, int>` | Full map of every user → how many items the engine assigned. |
-| `TotalAllocated` | `int` | Sum of all values in `Allocation`. |
-| `Trace` | `IReadOnlyList<DistributionTrace<TUserId>>` | Audit trail written by each pipeline step (useful for diagnostics). |
+| `Allocation` | `IDictionary<TUserId, int>` | Full map of every user → how many items the engine assigned. The dictionary is a defensive copy; mutating it does not affect subsequent runs. |
+| `TotalAllocated` | `int` | Sum of all values in `Allocation`. Always ≤ `RequestedDocuments`. |
+| `RequestedDocuments` | `int` | The document count passed to `Generate` / `GenerateAsync` for this run. |
+| `UnallocatedDocuments` | `int` | `Max(0, RequestedDocuments − TotalAllocated)`. Greater than 0 when total user capacity was exhausted before all requested items were placed. |
+| `IsFullyAllocated` | `bool` | `true` when every requested document was placed (`UnallocatedDocuments == 0`). |
+| `Trace` | `IReadOnlyList<DistributionTrace<TUserId>>` | Audit trail written by each pipeline step (useful for diagnostics). Exposed as a read-only collection. |
+
+To detect a partial allocation:
+
+```csharp
+if (!result.Response.IsFullyAllocated)
+    Console.WriteLine($"{result.Response.UnallocatedDocuments} item(s) could not be placed — capacity exhausted.");
+```
 
 ## Pipeline steps
 
 The engine executes the following steps in order:
 
 1. **`LoadScoringStep`** — scores each user as `(Capacity − CurrentLoad) / Capacity`.
-2. **`WorkingHoursCapacityStep`** *(when `MaxAllowedInProcessDocuments > 0`)* — recalculates effective capacity for part-time users: `effectiveCapacity = Truncate((WorkingHours × MaxAllowedDocs) / FullWorkDayHours)`.
+2. **`WorkingHoursCapacityStep`** *(when `MaxAllowedInProcessDocuments > 0`)* — recalculates effective capacity for part-time users: `effectiveCapacity = Truncate((WorkingHours × MaxAllowedDocs) / FullWorkDayHours)`. This effective capacity acts as a **hard allocation cap**: the user cannot receive more items than this value regardless of their raw `Capacity`. Users with `WorkingHours = 0` are skipped and their raw `Capacity` is used as-is.
 3. **`PriorityActivityScoringStep`** *(when `UsePriorityAndActivity = true`)* — multiplicatively adjusts scores using priority and activity recency.
-4. **`FairAllocationStep`** — distributes items one-by-one in round-robin, picking the highest-scored eligible user each round. Constraints (e.g. `MaxPerUserConstraint`) are enforced.
+4. **`FairAllocationStep`** — distributes items one at a time. Each round it picks the eligible user with the highest `score × remaining-headroom` (headroom = effectiveCapacity − currentLoad − alreadyAllocated this run). When two users tie on that product, the one with the lower `UserId` wins deterministically. This greedy strategy favors the least-loaded, most-available user; it does not round-robin. Constraints (e.g. `MaxPerUserConstraint`) are enforced before each placement.
 
 ## Async usage
 
@@ -98,7 +108,77 @@ The engine executes the following steps in order:
 var result = await sut.GenerateAsync(users, documents: 5, cancellationToken);
 ```
 
-The async overload runs the pipeline on a thread-pool thread and supports `CancellationToken`.
+The async overload runs the pipeline on a thread-pool thread. Pass a `CancellationToken` to allow cooperative cancellation. The token is checked between each pipeline step; if it is already cancelled when `GenerateAsync` is called, the method returns a failed `IResult` rather than throwing `OperationCanceledException`.
+
+## Validation and error handling
+
+The following inputs are rejected before the pipeline runs. Each case produces a failed `IResult<DistributionResult<TUserId>>` whose message describes the problem:
+
+- `users` is `null` — returns a failure with a descriptive message.
+- `documents` is negative — returns a failure with a descriptive message.
+- The `users` sequence contains duplicate `UserId` values — returns a failure.
+- A `UserLoad<TUserId>` is constructed with a negative `currentLoad`, `capacity`, or `workingHours` — the constructor throws `ArgumentOutOfRangeException`, which the helper catches and surfaces as a failed `IResult`.
+
+Constructor-level configuration errors throw immediately (not wrapped in `IResult`):
+
+- `MaxPerUser` is set to a value ≤ 0 — throws `ArgumentOutOfRangeException`.
+- `MaxAllowedInProcessDocuments > 0` but `FullWorkDayHours ≤ 0` — throws `ArgumentOutOfRangeException`.
+- `config` is `null` — throws `ArgumentNullException`.
+
+## Custom steps and constraints
+
+Use `EngineConfig<TUserId>` (a subclass of `EngineConfig`) to inject custom pipeline logic without forking the engine.
+
+**Pipeline ordering contract:** custom steps added via `AdditionalSteps` run after the built-in scoring and capacity steps and before the terminal `FairAllocationStep`, which always runs last. Custom constraints added via `AdditionalConstraints` are merged with the built-in `MaxPerUserConstraint` (when `MaxPerUser` is set) and passed to `FairAllocationStep` together.
+
+When both collections are empty or `null`, the pipeline behaves identically to the non-generic `EngineConfig` constructor.
+
+```csharp
+// Custom constraint — blocks a specific user from receiving any items.
+public class BlockUserConstraint<TUserId> : IConstraint<TUserId>
+{
+    private readonly TUserId _blockedUser;
+    public BlockUserConstraint(TUserId blockedUser) => _blockedUser = blockedUser;
+
+    public bool CanAllocate(TUserId userId, int currentAllocated)
+        => !userId.Equals(_blockedUser);
+}
+
+// Custom pipeline step — zeroes a user's score so they are ranked last.
+public class ZeroScoreStep<TUserId> : IDistributionStep<TUserId>
+    where TUserId : struct
+{
+    private readonly TUserId _targetUser;
+    public ZeroScoreStep(TUserId targetUser) => _targetUser = targetUser;
+
+    public IResult Execute(DistributionContext<TUserId> context)
+    {
+        if (context.Scores.ContainsKey(_targetUser))
+            context.Scores[_targetUser] = 0m;
+            
+        return Result.Success();
+    }
+}
+
+// Wire them up via EngineConfig<TUserId>
+var blockedId = Guid.NewGuid();
+var deprioritisedId = Guid.NewGuid();
+
+var helper = new DistributionSuggestionHelper<Guid>(new EngineConfig<Guid>
+{
+    MaxPerUser = 10,
+    AdditionalConstraints = new List<IConstraint<Guid>>
+    {
+        new BlockUserConstraint<Guid>(blockedId)
+    },
+    AdditionalSteps = new List<IDistributionStep<Guid>>
+    {
+        new ZeroScoreStep<Guid>(deprioritisedId)
+    }
+});
+
+var result = helper.Generate(users, documents: 20);
+```
 
 ---
 
@@ -111,9 +191,9 @@ This section walks through every change needed to move from the old `Distributio
 ```diff
 - using ItemDistribution.Helpers;
 - using ItemDistribution.Models.Dto;
-+ using ItemDistribution.Models.Config;
-+ using ItemDistribution.Models.Domain;
-+ using ItemDistribution.Public;
++ using RzR.ItemDistribution.Models.Config;
++ using RzR.ItemDistribution.Models.Domain;
++ using RzR.ItemDistribution.Public;
 ```
 
 ### Step 2 — Replace the singleton with a configured instance

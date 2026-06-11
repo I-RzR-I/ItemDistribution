@@ -14,7 +14,7 @@
 //  </summary>
 // ***********************************************************************
 
-namespace ItemDistribution.Models.Domain
+namespace RzR.ItemDistribution.Models.Domain
 {
     /// -------------------------------------------------------------------------------------------------
     /// <summary>

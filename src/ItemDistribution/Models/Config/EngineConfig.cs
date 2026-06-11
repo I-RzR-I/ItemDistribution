@@ -14,7 +14,7 @@
 //  </summary>
 // ***********************************************************************
 
-namespace ItemDistribution.Models.Config
+namespace RzR.ItemDistribution.Models.Config
 {
     /// -------------------------------------------------------------------------------------------------
     /// <summary>
@@ -41,9 +41,24 @@ namespace ItemDistribution.Models.Config
 
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
+        ///     When <see langword="true" />, the working-hours capacity step is explicitly enabled.
+        ///     The step is also enabled implicitly when <see cref="MaxAllowedInProcessDocuments" /> &gt; 0,
+        ///     so existing configurations that set <see cref="MaxAllowedInProcessDocuments" /> continue to
+        ///     work without change.
+        ///     When the feature is active (either by this flag or by <see cref="MaxAllowedInProcessDocuments" /> &gt; 0),
+        ///     both <see cref="MaxAllowedInProcessDocuments" /> &gt; 0 and <see cref="FullWorkDayHours" /> &gt; 0
+        ///     are required; otherwise an <see cref="System.ArgumentOutOfRangeException" /> is thrown during
+        ///     construction.
+        /// </summary>
+        /// =================================================================================================
+        public bool UseWorkingHoursCapacity { get; set; } = false;
+
+        /// -------------------------------------------------------------------------------------------------
+        /// <summary>
         ///     Number of hours in a standard full working day (e.g. 8).
-        ///     Required together with <see cref="MaxAllowedInProcessDocuments" /> to enable
-        ///     part-time capacity adjustment via <c>WorkingHoursCapacityStep</c>.
+        ///     Required (must be &gt; 0) whenever the working-hours capacity step is active, which happens
+        ///     when <see cref="UseWorkingHoursCapacity" /> is <see langword="true" /> or
+        ///     <see cref="MaxAllowedInProcessDocuments" /> &gt; 0.
         /// </summary>
         /// =================================================================================================
         public decimal FullWorkDayHours { get; set; } = 8;
@@ -51,8 +66,11 @@ namespace ItemDistribution.Models.Config
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
         ///     Maximum number of documents a full-day user can have in process at once (e.g. 20).
-        ///     Required together with <see cref="FullWorkDayHours" /> to enable part-time capacity adjustment.
-        ///     When 0 (default), the engine uses <see cref="Domain.UserLoad{TUserId}.Capacity" /> directly.
+        ///     Required (must be &gt; 0) whenever the working-hours capacity step is active, which happens
+        ///     when <see cref="UseWorkingHoursCapacity" /> is <see langword="true" /> or this value itself
+        ///     is &gt; 0. When 0 (default) and <see cref="UseWorkingHoursCapacity" /> is
+        ///     <see langword="false" />, the engine uses <see cref="Domain.UserLoad{TUserId}.Capacity" />
+        ///     directly.
         /// </summary>
         /// =================================================================================================
         public int MaxAllowedInProcessDocuments { get; set; } = 0;

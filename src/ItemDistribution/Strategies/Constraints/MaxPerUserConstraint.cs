@@ -16,18 +16,18 @@
 
 #region U S A G E S
 
-using ItemDistribution.Abstractions;
+using RzR.ItemDistribution.Abstractions;
 
 #endregion
 
-namespace ItemDistribution.Strategies.Constraints
+namespace RzR.ItemDistribution.Strategies.Constraints
 {
     /// -------------------------------------------------------------------------------------------------
     /// <summary>
     ///     A maximum per user constraint.
     /// </summary>
     /// <typeparam name="TUserId">Type of the user identifier.</typeparam>
-    /// <seealso cref="T:ItemDistribution.Abstractions.IConstraint{TUserId}" />
+    /// <seealso cref="T:RzR.ItemDistribution.Abstractions.IConstraint{TUserId}" />
     /// =================================================================================================
     public class MaxPerUserConstraint<TUserId> : IConstraint<TUserId>
     {

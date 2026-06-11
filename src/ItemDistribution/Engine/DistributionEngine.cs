@@ -16,10 +16,12 @@
 
 #region U S A G E S
 
-using DomainCommonExtensions.Models;
-using ItemDistribution.Abstractions.Pipeline;
-using ItemDistribution.Engine.Pipeline;
-using ItemDistribution.Models.Domain;
+using RzR.Extensions.Domain.Models;
+using RzR.Extensions.Domain.Primitives;
+using RzR.ItemDistribution.Abstractions.Pipeline;
+using RzR.ItemDistribution.Engine.Pipeline;
+using RzR.ItemDistribution.Models.Domain;
+using RzR.ResultMessage.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +30,7 @@ using System.Threading.Tasks;
 
 #endregion
 
-namespace ItemDistribution.Engine
+namespace RzR.ItemDistribution.Engine
 {
     /// -------------------------------------------------------------------------------------------------
     /// <summary>
@@ -37,6 +39,7 @@ namespace ItemDistribution.Engine
     /// <typeparam name="TUserId">Type of the user identifier.</typeparam>
     /// =================================================================================================
     public sealed class DistributionEngine<TUserId>
+        where TUserId : struct
     {
         /// -------------------------------------------------------------------------------------------------
         /// <summary>
@@ -59,25 +62,38 @@ namespace ItemDistribution.Engine
         /// </summary>
         /// <param name="users">The users.</param>
         /// <param name="documents">The documents.</param>
+        /// <param name="cancellationToken">Optional cancellation token; checked between pipeline steps.</param>
         /// <returns>
         ///     Allocation dictionary and audit trace.
         /// </returns>
         /// =================================================================================================
         public TupleResult<IDictionary<TUserId, int>, IList<DistributionTrace<TUserId>>> Execute(
-            IEnumerable<UserLoad<TUserId>> users,
-            int documents)
+            IEnumerable<UserLoad<TUserId>> users, int documents, CancellationToken cancellationToken = default)
         {
-            var context = new DistributionContext<TUserId>(users.ToList(), documents);
+            var context = new DistributionContext<TUserId>(users.ToList(), documents, cancellationToken);
 
             foreach (var step in _steps)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 var stepResult = step.Execute(context);
-                if (!stepResult.IsSuccess)
+                if (stepResult.IsSuccess.IsFalse())
+                {
+                    var stepMessage = stepResult.GetFirstMessage();
+                    var exceptionInfo = stepResult.Messages
+                        .FirstOrDefault(m => m.MessageType == MessageType.Exception);
+                    var innerMessage = exceptionInfo?.Message?.Info;
+                    var innerException = innerMessage.IsNull()
+                        ? null
+                        : new InvalidOperationException(innerMessage);
+
                     throw new InvalidOperationException(
-                        $"Distribution pipeline step '{step.GetType().Name}' failed.");
+                        $"Distribution pipeline step '{step.GetType().Name}' failed: {stepMessage}",
+                        innerException);
+                }
             }
 
-            return TupleResult.Create(context.Allocation, context.Trace);
+            return TupleResult.Create(context.AllocationMap, context.TraceList);
         }
 
         /// -------------------------------------------------------------------------------------------------
@@ -92,9 +108,7 @@ namespace ItemDistribution.Engine
         /// </returns>
         /// =================================================================================================
         public async Task<TupleResult<IDictionary<TUserId, int>, IList<DistributionTrace<TUserId>>>> ExecuteAsync(
-            IEnumerable<UserLoad<TUserId>> users,
-            int documents,
-            CancellationToken cancellationToken = default)
-            => await Task.Run(() => Execute(users, documents), cancellationToken);
+            IEnumerable<UserLoad<TUserId>> users, int documents, CancellationToken cancellationToken = default)
+            => await Task.Run(() => Execute(users, documents, cancellationToken), cancellationToken);
     }
 }

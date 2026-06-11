@@ -18,6 +18,7 @@
 
 using System.Reflection;
 using System.Resources;
+using System.Runtime.CompilerServices;
 
 #endregion
 
@@ -42,3 +43,5 @@ using System.Resources;
 [assembly: AssemblyVersion("2.0.0.6122")]
 [assembly: AssemblyFileVersion("2.0.0.6122")]
 [assembly: AssemblyInformationalVersion("2.0.0.6122")]
+
+[assembly: InternalsVisibleTo("ItemDistributionMsTests")]

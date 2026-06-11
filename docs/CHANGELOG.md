@@ -1,3 +1,5 @@
+# CHANGELOG
+
 ### **v2.0.0.6122** [[RzR](mailto:108324929+I-RzR-I@users.noreply.github.com)] 17-04-2026
 -> **Breaking**: Replaced the old `DistributionSuggestionHelper` singleton with a generic, pipeline-based engine.
 - New public entry point: `DistributionSuggestionHelper<TUserId>` (constructed with `EngineConfig`).
