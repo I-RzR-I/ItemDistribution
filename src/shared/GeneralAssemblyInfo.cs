@@ -40,8 +40,8 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyMetadata("ContactEmail", "ddpRzR@hotmail.com")]
 [assembly: NeutralResourcesLanguage("en-US", UltimateResourceFallbackLocation.MainAssembly)]
 
-[assembly: AssemblyVersion("3.0.0.7577")]
-[assembly: AssemblyFileVersion("3.0.0.7577")]
-[assembly: AssemblyInformationalVersion("3.0.0.7577")]
+[assembly: AssemblyVersion("3.1.0.4239")]
+[assembly: AssemblyFileVersion("3.1.0.4239")]
+[assembly: AssemblyInformationalVersion("3.1.0.4239")]
 
 [assembly: InternalsVisibleTo("ItemDistributionMsTests")]
