@@ -31,29 +31,25 @@ using System.Linq;
 
 namespace RzR.ItemDistribution.Strategies.Allocation
 {
-    /// -------------------------------------------------------------------------------------------------
     /// <summary>
     ///     A fair allocation step.
     /// </summary>
     /// <typeparam name="TUserId">Type of the user identifier.</typeparam>
-    /// <seealso cref="T:RzR.ItemDistribution.Abstractions.Pipeline.IDistributionStep{TUserId}" />
-    /// =================================================================================================
+    /// <seealso cref="T:RzR.ItemDistribution.Abstractions.Pipeline.IDistributionStep{TUserId}">
+    ///     =================================================================================================
+    /// </seealso>
     public class FairAllocationStep<TUserId> : IDistributionStep<TUserId>
         where TUserId : struct
     {
-        /// -------------------------------------------------------------------------------------------------
         /// <summary>
         ///     (Immutable) the constraints.
         /// </summary>
-        /// =================================================================================================
         private readonly IEnumerable<IConstraint<TUserId>> _constraints;
 
-        /// -------------------------------------------------------------------------------------------------
         /// <summary>
         ///     Initializes a new instance of the <see cref="FairAllocationStep{TUserId}" /> class.
         /// </summary>
         /// <param name="constraints">The constraints.</param>
-        /// =================================================================================================
         public FairAllocationStep(IEnumerable<IConstraint<TUserId>> constraints) => _constraints = constraints;
 
         /// <inheritdoc />

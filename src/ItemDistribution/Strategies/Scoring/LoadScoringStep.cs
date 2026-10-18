@@ -27,13 +27,13 @@ using System;
 
 namespace RzR.ItemDistribution.Strategies.Scoring
 {
-    /// -------------------------------------------------------------------------------------------------
     /// <summary>
     ///     A load scoring step.
     /// </summary>
     /// <typeparam name="TUserId">Type of the user identifier.</typeparam>
-    /// <seealso cref="T:RzR.ItemDistribution.Abstractions.Pipeline.IDistributionStep{TUserId}" />
-    /// =================================================================================================
+    /// <seealso cref="T:RzR.ItemDistribution.Abstractions.Pipeline.IDistributionStep{TUserId}">
+    ///     =================================================================================================
+    /// </seealso>
     public class LoadScoringStep<TUserId> : IDistributionStep<TUserId>
         where TUserId : struct
     {

@@ -38,39 +38,39 @@ using System.Threading.Tasks;
 
 namespace RzR.ItemDistribution.Public
 {
-    /// -------------------------------------------------------------------------------------------------
     /// <summary>
-    ///     High-level entry point for the distribution engine.
-    ///     Compose the pipeline via <see cref="EngineConfig" /> or <see cref="EngineConfig{TUserId}" />
-    ///     and call <see cref="Generate" /> / <see cref="GenerateAsync" /> to allocate items across users.
+    ///     High-level entry point for the distribution engine. Compose the pipeline via <see cref="EngineConfig" />
+    ///     or <see cref="EngineConfig{TUserId}" />
+    ///     and call <see cref="Generate" /> / <see cref="GenerateAsync" /> to allocate items across
+    ///     users.
     /// </summary>
     /// <typeparam name="TUserId">
-    ///     Type of the user identifier (must be a value type, e.g. <see cref="Guid" /> or <see cref="int" />).
+    ///     Type of the user identifier (must be a value type, e.g. <see cref="Guid" /> or <see cref="int" />
+    ///     ).
     /// </typeparam>
-    /// <seealso cref="T:RzR.ItemDistribution.Abstractions.IDistributionSuggestionHelper{TUserId}" />
-    /// =================================================================================================
+    /// <seealso cref="T:RzR.ItemDistribution.Abstractions.IDistributionSuggestionHelper{TUserId}">
+    ///     =================================================================================================
+    /// </seealso>
     public class DistributionSuggestionHelper<TUserId> : IDistributionSuggestionHelper<TUserId>
         where TUserId : struct
     {
-        /// -------------------------------------------------------------------------------------------------
         /// <summary>
         ///     (Immutable) the distribution engine.
         /// </summary>
-        /// =================================================================================================
         private readonly DistributionEngine<TUserId> _engine;
 
-        /// -------------------------------------------------------------------------------------------------
         /// <summary>
         ///     Initializes a new instance of the
         ///     <see cref="DistributionSuggestionHelper{TUserId}" /> class with base configuration.
         ///     The pipeline uses only the built-in scoring, capacity, and allocation steps.
         /// </summary>
-        /// <param name="config">Engine configuration. Must not be <see langword="null" />.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="config" /> is null.</exception>
+        /// <exception cref="ArgumentNullException">
+        ///     Thrown when <paramref name="config" /> is null.
+        /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">
         ///     Thrown when <see cref="EngineConfig.MaxPerUser" /> is set to a value ≤ 0.
         /// </exception>
-        /// =================================================================================================
+        /// <param name="config">Engine configuration. Must not be <see langword="null" />.</param>
         public DistributionSuggestionHelper(EngineConfig config)
         {
             if (config.IsNull())
@@ -79,7 +79,6 @@ namespace RzR.ItemDistribution.Public
             _engine = new DistributionEngine<TUserId>(BuildPipeline(config, null, null));
         }
 
-        /// -------------------------------------------------------------------------------------------------
         /// <summary>
         ///     Initializes a new instance of the
         ///     <see cref="DistributionSuggestionHelper{TUserId}" /> class with consumer-supplied
@@ -97,11 +96,9 @@ namespace RzR.ItemDistribution.Public
         ///     pipeline behaves identically to the <see cref="DistributionSuggestionHelper{TUserId}(EngineConfig)" />
         ///     constructor.
         /// </summary>
-        /// <param name="config">
-        ///     Generic engine configuration with optional custom steps and constraints.
-        ///     Must not be <see langword="null" />.
-        /// </param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="config" /> is null.</exception>
+        /// <exception cref="ArgumentNullException">
+        ///     Thrown when <paramref name="config" /> is null.
+        /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">
         ///     Thrown when <see cref="EngineConfig.MaxPerUser" /> is set to a value ≤ 0.
         /// </exception>
@@ -112,7 +109,9 @@ namespace RzR.ItemDistribution.Public
         ///     <see cref="EngineConfig{TUserId}.AdditionalConstraints" /> contains a
         ///     <see langword="null" /> entry.
         /// </exception>
-        /// =================================================================================================
+        /// <param name="config">
+        ///     Generic engine configuration with optional custom steps and constraints. Must not be <see langword="null" />     .
+        /// </param>
         public DistributionSuggestionHelper(EngineConfig<TUserId> config)
         {
             if (config.IsNull())
@@ -177,23 +176,29 @@ namespace RzR.ItemDistribution.Public
             }
         }
 
-        /// -------------------------------------------------------------------------------------------------
         /// <summary>
         ///     Builds the ordered pipeline list from base config, optional extra steps, and optional
-        ///     extra constraints. Validates shared config fields that apply regardless of the constructor
-        ///     overload used.
+        ///     extra constraints. Validates shared config fields that apply regardless of the
+        ///     constructor overload used.
         /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///     Thrown when one or more arguments are outside the required range.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        ///     Thrown when one or more arguments have unsupported or illegal values.
+        /// </exception>
         /// <param name="config">Base engine configuration.</param>
         /// <param name="additionalSteps">
-        ///     Consumer-supplied steps to insert after scoring/capacity and before allocation.
-        ///     May be null or empty.
+        ///     Consumer-supplied steps to insert after scoring/capacity and before allocation. May be
+        ///     null or empty.
         /// </param>
         /// <param name="additionalConstraints">
-        ///     Consumer-supplied constraints merged with built-in ones for the allocation step.
-        ///     May be null or empty.
+        ///     Consumer-supplied constraints merged with built-in ones for the allocation step. May be
+        ///     null or empty.
         /// </param>
-        /// <returns>Ordered list of pipeline steps.</returns>
-        /// =================================================================================================
+        /// <returns>
+        ///     Ordered list of pipeline steps.
+        /// </returns>
         private static IEnumerable<IDistributionStep<TUserId>> BuildPipeline(
             EngineConfig config,
             IReadOnlyList<IDistributionStep<TUserId>> additionalSteps,

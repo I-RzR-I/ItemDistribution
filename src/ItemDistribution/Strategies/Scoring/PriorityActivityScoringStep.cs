@@ -28,25 +28,24 @@ using System.Linq;
 
 namespace RzR.ItemDistribution.Strategies.Scoring
 {
-    /// -------------------------------------------------------------------------------------------------
     /// <summary>
-    ///     Scoring step that adjusts each user's base load-score by their priority and
-    ///     how recently they were active.
-    ///     Adjustment formula (applied multiplicatively after <see cref="LoadScoringStep{TUserId}" />):
+    ///     Scoring step that adjusts each user's base load-score by their priority and how recently
+    ///     they were active. Adjustment formula (applied multiplicatively after <see cref="LoadScoringStep{TUserId}" />
+    ///     ):
     ///     <list type="bullet">
     ///         <item>
     ///             Priority score — range = maxPriority − minPriority;
     ///             range == 0 ? 1 : (maxPriority − userPriority + 1) / (range + 1)
-    ///             -> closer to minPriority = higher priority = higher multiplier.
-    ///             Result is always in (0, 1]. Denominator is always >= 1 regardless of sign.
+    ///             -&gt; closer to minPriority = higher priority = higher multiplier.
+    ///             Result is always in (0, 1]. Denominator is always &gt;= 1 regardless of sign.
     ///         </item>
     ///         <item>
     ///             Activity score — (maxAgeDays − clampedAgeDays) / maxAgeDays
-    ///             -> more recent user gets closer to 1.
-    ///             ageDays is clamped to [0, maxAgeDays] before use so that a
-    ///             future-dated <c>LastActivityDate</c> (e.g. local vs UTC mismatch)
-    ///             cannot produce a negative age, which would push activityScore
-    ///             above 1 and violate the documented [0, 1] range.
+    ///             -&gt; more recent user gets closer to 1.
+    ///             ageDays is clamped to [0, maxAgeDays] before use so that a future-dated <c>
+    ///             LastActivityDate</c> (e.g. local vs UTC mismatch)
+    ///             cannot produce a negative age, which would push activityScore above 1 and violate
+    ///             the documented [0, 1] range.
     ///         </item>
     ///         <item>Combined — baseScore × (priorityScore + activityScore) / 2</item>
     ///     </list>
@@ -54,17 +53,20 @@ namespace RzR.ItemDistribution.Strategies.Scoring
     ///     and does not change ranking.
     /// </summary>
     /// <typeparam name="TUserId">Type of the user identifier.</typeparam>
-    /// <seealso cref="T:RzR.ItemDistribution.Abstractions.Pipeline.IDistributionStep{TUserId}" />
-    /// =================================================================================================
+    /// <seealso cref="T:RzR.ItemDistribution.Abstractions.Pipeline.IDistributionStep{TUserId}">
+    ///     =================================================================================================
+    /// </seealso>
     public class PriorityActivityScoringStep<TUserId> : IDistributionStep<TUserId>
         where TUserId : struct
     {
         /// <summary>
-        ///     Clock delegate used to retrieve the current UTC time.
-        ///     Defaults to <see cref="DateTime.UtcNow" />.
-        ///     Provided as an internal seam so that unit tests can inject a deterministic time
-        ///     without changing the public constructor signature.
+        ///     Clock delegate used to retrieve the current UTC time. Defaults to <see cref="DateTime.UtcNow" />
+        ///     . Provided as an internal seam so that unit tests can inject a deterministic time without
+        ///     changing the public constructor signature.
         /// </summary>
+        /// <value>
+        ///     A function delegate that yields a DateTime.
+        /// </value>
         internal Func<DateTime> Clock { get; set; } = () => DateTime.UtcNow;
 
         /// <inheritdoc />

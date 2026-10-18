@@ -22,28 +22,24 @@ using RzR.ItemDistribution.Abstractions;
 
 namespace RzR.ItemDistribution.Strategies.Constraints
 {
-    /// -------------------------------------------------------------------------------------------------
     /// <summary>
     ///     A maximum per user constraint.
     /// </summary>
     /// <typeparam name="TUserId">Type of the user identifier.</typeparam>
-    /// <seealso cref="T:RzR.ItemDistribution.Abstractions.IConstraint{TUserId}" />
-    /// =================================================================================================
+    /// <seealso cref="T:RzR.ItemDistribution.Abstractions.IConstraint{TUserId}">
+    ///     =================================================================================================
+    /// </seealso>
     public class MaxPerUserConstraint<TUserId> : IConstraint<TUserId>
     {
-        /// -------------------------------------------------------------------------------------------------
         /// <summary>
         ///     (Immutable) the maximum.
         /// </summary>
-        /// =================================================================================================
         private readonly int _max;
 
-        /// -------------------------------------------------------------------------------------------------
         /// <summary>
         ///     Initializes a new instance of the <see cref="MaxPerUserConstraint{TUserId}" /> class.
         /// </summary>
         /// <param name="max">The maximum.</param>
-        /// =================================================================================================
         public MaxPerUserConstraint(int max) => _max = max;
 
         /// <inheritdoc />
