@@ -1,3 +1,8 @@
+### **v3.1.0.4239** [[RzR](mailto:108324929+I-RzR-I@users.noreply.github.com)] 18-10-2026
+* [a71f73b] (RzR) -> Auto commit uncommited files
+* [992ae37] (RzR) -> Update the methods summary to use the same pattern.
+* [c198368] (RzR) -> Upgrade the ref packages version.
+
 # CHANGELOG
 
 ### **v3.0.0.7577** [[RzR](mailto:108324929+I-RzR-I@users.noreply.github.com)] 11-06-2026
