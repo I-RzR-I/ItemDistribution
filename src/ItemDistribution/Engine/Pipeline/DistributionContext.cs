@@ -29,7 +29,6 @@ using System.Threading;
 
 namespace RzR.ItemDistribution.Engine.Pipeline
 {
-    /// -------------------------------------------------------------------------------------------------
     /// <summary>
     ///     Concrete distribution context built by the engine before executing the pipeline.
     ///     Implements <see cref="IDistributionContext{TUserId}" /> so that steps receive only the
@@ -38,7 +37,7 @@ namespace RzR.ItemDistribution.Engine.Pipeline
     ///     <see cref="AllocationMap" /> and <see cref="TraceList" /> accessors.
     /// </summary>
     /// <typeparam name="TUserId">Type of the user identifier.</typeparam>
-    /// =================================================================================================
+    /// <seealso cref="T:RzR.ItemDistribution.Abstractions.Pipeline.IDistributionContext{TUserId}"/>
     public class DistributionContext<TUserId> : IDistributionContext<TUserId>
         where TUserId : struct
     {
@@ -50,17 +49,18 @@ namespace RzR.ItemDistribution.Engine.Pipeline
         private readonly ReadOnlyDictionary<TUserId, decimal> _effectiveCapacityView;
         private readonly ReadOnlyDictionary<TUserId, int> _allocationView;
 
-        /// -------------------------------------------------------------------------------------------------
         /// <summary>
         ///     Initializes a new instance of the <see cref="DistributionContext{TUserId}" /> class.
         /// </summary>
+        /// <exception cref="ArgumentException">
+        ///     Thrown when one or more arguments have unsupported or illegal values.
+        /// </exception>
         /// <param name="users">The users.</param>
         /// <param name="documents">The documents.</param>
         /// <param name="cancellationToken">
-        ///     Optional token that pipeline steps can observe to abort long-running work.
-        ///     Defaults to <see cref="CancellationToken.None" />.
+        ///     (Optional)
+        ///     Optional token that pipeline steps can observe to abort long-running work. Defaults to <see cref="CancellationToken.None" />.
         /// </param>
-        /// =================================================================================================
         public DistributionContext(
             IReadOnlyList<UserLoad<TUserId>> users,
             int documents,
@@ -145,22 +145,24 @@ namespace RzR.ItemDistribution.Engine.Pipeline
             _trace.Add(trace);
         }
 
-        /// -------------------------------------------------------------------------------------------------
         /// <summary>
         ///     Internal accessor used by <see cref="RzR.ItemDistribution.Engine.DistributionEngine{TUserId}" />
-        ///     to extract the mutable allocation map for the <c>TupleResult</c> return value.
-        ///     Not part of the step-facing <see cref="IDistributionContext{TUserId}" /> surface.
+        ///     to extract the mutable allocation map for the <c>TupleResult</c> return value. Not part
+        ///     of the step-facing <see cref="IDistributionContext{TUserId}" /> surface.
         /// </summary>
-        /// =================================================================================================
+        /// <value>
+        ///     The allocation map.
+        /// </value>
         internal IDictionary<TUserId, int> AllocationMap => _allocation;
 
-        /// -------------------------------------------------------------------------------------------------
         /// <summary>
         ///     Internal accessor used by <see cref="RzR.ItemDistribution.Engine.DistributionEngine{TUserId}" />
-        ///     to extract the mutable trace list for the <c>TupleResult</c> return value.
-        ///     Not part of the step-facing <see cref="IDistributionContext{TUserId}" /> surface.
+        ///     to extract the mutable trace list for the <c>TupleResult</c> return value. Not part of
+        ///     the step-facing <see cref="IDistributionContext{TUserId}" /> surface.
         /// </summary>
-        /// =================================================================================================
+        /// <value>
+        ///     A list of traces.
+        /// </value>
         internal IList<DistributionTrace<TUserId>> TraceList => _trace;
     }
 }

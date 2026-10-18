@@ -25,7 +25,6 @@ using System.Linq;
 
 namespace RzR.ItemDistribution.Models.Domain
 {
-    /// -------------------------------------------------------------------------------------------------
     /// <summary>
     ///     The result produced by a single run of the distribution engine.
     ///     <para>
@@ -59,18 +58,17 @@ namespace RzR.ItemDistribution.Models.Domain
     ///     </para>
     /// </summary>
     /// <typeparam name="TUserId">Type of the user identifier (must be a value type).</typeparam>
-    /// =================================================================================================
     public sealed class DistributionResult<TUserId>
         where TUserId : struct
     {
-        /// -------------------------------------------------------------------------------------------------
         /// <summary>
         ///     Initializes a new instance of the <see cref="DistributionResult{TUserId}" /> class.
         /// </summary>
         /// <param name="allocation">Allocation map from the engine.</param>
         /// <param name="trace">Audit trace from the engine.</param>
-        /// <param name="requestedDocuments">The number of documents submitted to the engine for this run.</param>
-        /// =================================================================================================
+        /// <param name="requestedDocuments">
+        ///     The number of documents submitted to the engine for this run.
+        /// </param>
         internal DistributionResult(
             IDictionary<TUserId, int> allocation,
             IList<DistributionTrace<TUserId>> trace,
@@ -94,78 +92,86 @@ namespace RzR.ItemDistribution.Models.Domain
             AlternativeUserId = ranked.Count > 1 ? ranked[1].Key : null;
         }
 
-        /// -------------------------------------------------------------------------------------------------
         /// <summary>
         ///     The user ranked first by the engine — the primary recommendation for the next assignment.
         ///     <c>null</c> when no items could be allocated (e.g. all users are at full capacity,
         ///     or <c>documents = 0</c>).
         /// </summary>
-        /// =================================================================================================
+        /// <value>
+        ///     The identifier of the primary user.
+        /// </value>
         public TUserId? PrimaryUserId { get; }
 
-        /// -------------------------------------------------------------------------------------------------
         /// <summary>
         ///     The user ranked second by the engine — a fallback when
         ///     <see cref="PrimaryUserId" /> is unavailable.
         ///     <c>null</c> when fewer than two users received at least one item.
         /// </summary>
-        /// =================================================================================================
+        /// <value>
+        ///     The identifier of the alternative user.
+        /// </value>
         public TUserId? AlternativeUserId { get; }
 
-        /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Full allocation map produced by the engine.
-        ///     Every input user has an entry; the value is the number of items assigned to that user.
-        ///     A value of <c>0</c> means the user received nothing in this run.
+        ///     Full allocation map produced by the engine. Every input user has an entry; the value is
+        ///     the number of items assigned to that user. A value of <c>0</c> means the user received
+        ///     nothing in this run.
         /// </summary>
-        /// =================================================================================================
+        /// <value>
+        ///     The allocation.
+        /// </value>
         public IDictionary<TUserId, int> Allocation { get; }
 
-        /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     The sum of all values in <see cref="Allocation" />.
-        ///     Always ≤ the <c>documents</c> count passed to the engine
-        ///     (maybe less when all users are at capacity before all items are placed).
-        ///     When <see cref="UnallocatedDocuments" /> &gt; 0, capacity was exhausted before all items
-        ///     were placed.
+        ///     The sum of all values in <see cref="Allocation" />. Always ≤ the <c>documents</c> count
+        ///     passed to the engine (maybe less when all users are at capacity before all items are
+        ///     placed). When <see cref="UnallocatedDocuments" /> &gt; 0, capacity was exhausted before
+        ///     all items were placed.
         /// </summary>
-        /// =================================================================================================
+        /// <value>
+        ///     The total number of allocated.
+        /// </value>
         public int TotalAllocated { get; }
 
-        /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     The number of documents submitted to the engine for this run.
-        ///     Comparing this against <see cref="TotalAllocated" /> shows whether any items went unplaced;
-        ///     prefer <see cref="UnallocatedDocuments" /> or <see cref="IsFullyAllocated" /> for that check.
+        ///     The number of documents submitted to the engine for this run. Comparing this against <see cref="TotalAllocated" />
+        ///     shows whether any items went unplaced;
+        ///     prefer <see cref="UnallocatedDocuments" /> or <see cref="IsFullyAllocated" /> for that
+        ///     check.
         /// </summary>
-        /// =================================================================================================
+        /// <value>
+        ///     The requested documents.
+        /// </value>
         public int RequestedDocuments { get; }
 
-        /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     The number of documents that could not be placed because total user capacity was exhausted
-        ///     before all items were distributed.
-        ///     Computed as <c>Max(0, <see cref="RequestedDocuments" /> - <see cref="TotalAllocated" />)</c>.
-        ///     A value greater than 0 means the engine ran out of available capacity mid-run.
+        ///     The number of documents that could not be placed because total user capacity was
+        ///     exhausted before all items were distributed. Computed as <c>Max(0, <see cref="RequestedDocuments" />
+        ///     - <see cref="TotalAllocated" />)</c>. A value greater than 0 means the engine ran out of
+        ///     available capacity mid-run.
         /// </summary>
-        /// =================================================================================================
+        /// <value>
+        ///     The unallocated documents.
+        /// </value>
         public int UnallocatedDocuments { get; }
 
-        /// -------------------------------------------------------------------------------------------------
         /// <summary>
         ///     <see langword="true" /> when every requested document was placed;
         ///     <see langword="false" /> when at least one document could not be allocated due to capacity
         ///     constraints (<see cref="UnallocatedDocuments" /> &gt; 0).
         /// </summary>
-        /// =================================================================================================
+        /// <value>
+        ///     True if this object is fully allocated, false if not.
+        /// </value>
         public bool IsFullyAllocated { get; }
 
-        /// -------------------------------------------------------------------------------------------------
         /// <summary>
-        ///     Audit trace written by each pipeline step.
-        ///     Useful for diagnostics and understanding why a particular score was assigned.
+        ///     Audit trace written by each pipeline step. Useful for diagnostics and understanding why a
+        ///     particular score was assigned.
         /// </summary>
-        /// =================================================================================================
+        /// <value>
+        ///     The trace.
+        /// </value>
         public IReadOnlyList<DistributionTrace<TUserId>> Trace { get; }
     }
 }

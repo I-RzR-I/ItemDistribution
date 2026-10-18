@@ -27,34 +27,32 @@ using System;
 
 namespace RzR.ItemDistribution.Strategies.Capacity
 {
-    /// -------------------------------------------------------------------------------------------------
     /// <summary>
-    ///     Pipeline step that recalculates the load score for part-time users.
-    ///     For each user whose <c>UserLoad.WorkingHours</c> is greater than zero, the step
-    ///     computes an effective capacity proportional to their working hours:
-    ///     effectiveCapacity = Truncate( (WorkingHours × MaxAllowedDocs) / FullWorkDayHours )
-    ///     and then overwrites the score that <see cref="Scoring.LoadScoringStep{TUserId}" /> wrote with:
-    ///     adjustedScore = (effectiveCapacity − CurrentLoad) / effectiveCapacity
-    ///     Users whose <c>WorkingHours</c> is 0 ("not set") are skipped — their score
-    ///     from <see cref="Scoring.LoadScoringStep{TUserId}" /> is left unchanged.
-    ///     This step must be placed AFTER <see cref="Scoring.LoadScoringStep{TUserId}" /> in the pipeline.
+    ///     Pipeline step that recalculates the load score for part-time users. For each user whose <c>
+    ///     UserLoad.WorkingHours</c> is greater than zero, the step computes an effective capacity
+    ///     proportional to their working hours: effectiveCapacity = Truncate( (WorkingHours ×
+    ///     MaxAllowedDocs) / FullWorkDayHours )
+    ///     and then overwrites the score that <see cref="Scoring.LoadScoringStep{TUserId}" /> wrote
+    ///     with: adjustedScore = (effectiveCapacity − CurrentLoad) / effectiveCapacity Users whose <c>
+    ///     WorkingHours</c> is 0 ("not set") are skipped — their score from <see cref="Scoring.LoadScoringStep{TUserId}" />
+    ///     is left unchanged. This step must be placed AFTER <see cref="Scoring.LoadScoringStep{TUserId}" />
+    ///     in the pipeline.
     /// </summary>
     /// <typeparam name="TUserId">Type of the user identifier.</typeparam>
-    /// <seealso cref="T:RzR.ItemDistribution.Abstractions.Pipeline.IDistributionStep{TUserId}" />
-    /// =================================================================================================
+    /// <seealso cref="T:RzR.ItemDistribution.Abstractions.Pipeline.IDistributionStep{TUserId}">
+    ///     =================================================================================================
+    /// </seealso>
     public class WorkingHoursCapacityStep<TUserId> : IDistributionStep<TUserId>
         where TUserId : struct
     {
         private readonly decimal _fullWorkDayHours;
         private readonly int _maxAllowedDocs;
 
-        /// -------------------------------------------------------------------------------------------------
         /// <summary>
         ///     Initializes a new instance of the <see cref="WorkingHoursCapacityStep{TUserId}" /> class.
         /// </summary>
         /// <param name="fullWorkDayHours">Hours in a standard full working day (e.g. 8).</param>
         /// <param name="maxAllowedDocs">Max documents a full-day user can process (e.g. 20).</param>
-        /// =================================================================================================
         public WorkingHoursCapacityStep(decimal fullWorkDayHours, int maxAllowedDocs)
         {
             _fullWorkDayHours = fullWorkDayHours;

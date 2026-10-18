@@ -16,15 +16,12 @@
 
 namespace RzR.ItemDistribution.Abstractions
 {
-    /// -------------------------------------------------------------------------------------------------
     /// <summary>
     ///     Interface for constraint.
     /// </summary>
     /// <typeparam name="TUserId">Type of the user identifier.</typeparam>
-    /// =================================================================================================
     public interface IConstraint<in TUserId>
     {
-        /// -------------------------------------------------------------------------------------------------
         /// <summary>
         ///     Determine if we can allocate.
         /// </summary>
@@ -33,7 +30,6 @@ namespace RzR.ItemDistribution.Abstractions
         /// <returns>
         ///     True if we can allocate, false if not.
         /// </returns>
-        /// =================================================================================================
         bool CanAllocate(TUserId userId, int currentAllocated);
     }
 }
